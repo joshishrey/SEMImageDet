@@ -6,7 +6,7 @@ import numpy as np
 import tkinter as tk
 # Read image.
 
-image='IFSGTestsAugust_m09.tif'
+image='Sample 1 Sample A may 24_m02.tif'
 
 img = cv2.imread(image, cv2.IMREAD_COLOR)
 fullImage=img.copy()
@@ -33,7 +33,7 @@ cv2.imshow('thresh',thresh)
 
 
 img = cv2.imread(image, cv2.IMREAD_COLOR)
-sampleDes='SEM sample,  directly from the generator'
+sampleDes='Cab-o-jet 300nm sample A, 15 mins '
 
 
 
@@ -140,10 +140,10 @@ for i in range(len(rectangle)):
         ar=rectangle[i][3]/rectangle[i][2]
 
     img2=fullImage.copy()
-    cv2.putText(img2,sampleDes, (10,680), 1, 1,(255,255,255),2)
-    cv2.putText(img2,'Total number of particles:'+str(len(largeCont)), (10,700), 1, 1,(255,255,255),2)
-    cv2.putText(img2,'Total number of compact particles:'+str(CompactCount), (10,720), 1, 1,(0,0,0),2)
-    cv2.putText(img2,'Total number of Lacey particles:'+str(LaceyCount), (10,740), 1, 1,(255,255,255),2)
+    cv2.putText(img2,sampleDes, (10,680), 1, 2,(255,255,255),2)
+    cv2.putText(img2,'Total number of particles:'+str(len(largeCont)), (10,700), 1, 2,(255,255,255),2)
+    cv2.putText(img2,'Total number of compact particles:'+str(CompactCount), (10,720), 1, 2,(0,0,0),2)
+    cv2.putText(img2,'Total number of Lacey particles:'+str(LaceyCount), (10,740), 1, 2,(255,255,255),2)
     if Solidity[i] <0.8:
         dCRect=cv2.rectangle(img2,(rectangle[i][0],rectangle[i][1]),(rectangle[i][0]+rectangle[i][2],rectangle[i][1]+rectangle[i][3]),(0,255,0),1)
         
@@ -203,7 +203,7 @@ for i in range(len(rectangle)):
         selectedRect.append(rectangle[i])
         area.append(cv2.contourArea(largeCont[i]))
         equDiameter=2*((cv2.contourArea(largeCont[i])*PixToNM*PixToNM)/np.pi)**(1/2)
-        dCRect=cv2.putText(dCRect,"{:.3f}".format(Solidity[i]), (rectangle[i][0],rectangle[i][1]-8), 1, 1,(255,255,255),1)
+        dCRect=cv2.putText(dCRect,"{:.3f}".format(Solidity[i]), (rectangle[i][0],rectangle[i][1]-8), 1, 1.3,(255,255,255),1)
         selectedSolidity.append(Solidity[i])
        
    
@@ -225,10 +225,10 @@ for i in selectedRect:
 print('Total number of particles:'+str(len(largeCont)))
 print('Total number of compact particles:'+str(CompactCount))
 print('Total number of Lacey particles:'+str(LaceyCount))
-cv2.putText(img2,sampleDes, (10,680), 1, 1,(255,255,255),2)
-cv2.putText(img2,'Total number of particles:'+str(len(largeCont)), (10,700), 1, 1,(255,255,255),2)
-cv2.putText(img2,'Total number of compact particles:'+str(CompactCount), (10,720), 1, 1,(0,0,0),2)
-cv2.putText(img2,'Total number of Lacey particles:'+str(LaceyCount), (10,740), 1, 1,(255,255,255),2)
+cv2.putText(img2,sampleDes, (10,680), 1, 2,(255,255,255),2)
+cv2.putText(img2,'Total number of particles:'+str(len(largeCont)), (10,700), 1, 2,(255,255,255),2)
+cv2.putText(img2,'Total number of compact particles:'+str(CompactCount), (10,720), 1, 2,(0,0,0),2)
+cv2.putText(img2,'Total number of Lacey particles:'+str(LaceyCount), (10,740), 1, 2,(255,255,255),2)
 
 ret, thresh2=cv2.threshold(gray2,165,255,cv2.THRESH_BINARY_INV)
 
