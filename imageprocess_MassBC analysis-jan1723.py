@@ -91,8 +91,12 @@ for filename in os.listdir(directory):
     import tkinter.messagebox
     manual = tk.messagebox.askyesno(title='confirmation',
                         message='You can manually tune the threshold for the particle detection. use o and p keys to control the threshol. Use the k and l keys to control the blur intensity. \r To control the thresh for the black region use n and m.'
-                                    '\r Press enter when you are satisfied with the selection. \r Use <> and [] to adjust the edge detection')
+                                    '\r Press enter when you are satisfied with the selection. \r Use <> and [] to adjust the edge detection. \r Press no to skip image')
 
+        # If the user presses 'No', skip to the next file
+    if not manual:
+        continue
+    
     # parameters are changed using keys to detect teh particles correctly
 
     k=0
