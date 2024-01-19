@@ -47,7 +47,7 @@ for filename in os.listdir(directory):
     contours,hie = cv2.findContours(thresh, cv2.RETR_TREE, cv2.CHAIN_APPROX_SIMPLE)
 
     #Finds the scale in the image
-    cropped_img = img2[900:1000, 900:1400]  # Example crop coordinates
+    cropped_img = img2[850:1000, 900:1400]  # Example crop coordinates
 
     # Convert to grayscale and apply threshold
     gray = cv2.cvtColor(cropped_img, cv2.COLOR_BGR2GRAY)
@@ -91,12 +91,8 @@ for filename in os.listdir(directory):
     import tkinter.messagebox
     manual = tk.messagebox.askyesno(title='confirmation',
                         message='You can manually tune the threshold for the particle detection. use o and p keys to control the threshol. Use the k and l keys to control the blur intensity. \r To control the thresh for the black region use n and m.'
-                                    '\r Press enter when you are satisfied with the selection. \r Use <> and [] to adjust the edge detection. \r Press no to skip image')
+                                    '\r Press enter when you are satisfied with the selection. \r Use <> and [] to adjust the edge detection')
 
-        # If the user presses 'No', skip to the next file
-    if not manual:
-        continue
-    
     # parameters are changed using keys to detect teh particles correctly
 
     k=0
@@ -265,6 +261,7 @@ for filename in os.listdir(directory):
     AOD=[]
     equivalentDiameter=[]
     perimeter = []
+    aspectRatio = [] 
     count=0
     for i in range(len(rectangle)-1):
         if(isLacey[i]<2):    
@@ -274,11 +271,23 @@ for filename in os.listdir(directory):
             area.append(cv2.contourArea(largeCont[i]))
             perimeter_contour = cv2.arcLength(largeCont[i], True)*PixToNM
             perimeter.append(perimeter_contour)
-            equDiameter=2*((cv2.contourArea(largeCont[i])*PixToNM*PixToNM)/np.pi)**(1/2)
+            equDiameter=2*((cv2.contourArea(largeCont[i])*PixToNM*PixToNM)/np.pi)**(1/2) 
             dCRect=cv2.putText(dCRect,'  w='+str(int(rectangle[i][2]*PixToNM))+'nm', (rectangle[i][0],rectangle[i][1]-8), 1, 1,(255,255,255),1)
             dCRect=cv2.putText(dCRect,'Particle #='+str(count)+ ' h='+str(int(rectangle[i][3]*PixToNM))+'nm', (rectangle[i][0],rectangle[i][1]-20), 1, 1,(255,255,255),1)
             Sphericity=np.pi*equDiameter/perimeter_contour
-            AOD.append([count,rectangle[i][2]*PixToNM,rectangle[i][3]*PixToNM,rectangle[i][0]*PixToNM,rectangle[i][1]*PixToNM,Solidity[i],equDiameter,perimeter_contour,Sphericity])
+
+            min_area_rect = cv2.minAreaRect(largeCont[i])
+            box = cv2.boxPoints(min_area_rect)
+            box = np.int0(box)
+            dCRect = cv2.drawContours(img2, [box], 0, (0, 255, 0), 1)
+            
+            rect_width = min_area_rect[1][0]  * PixToNM
+            rect_height = min_area_rect[1][1] * PixToNM
+            # Calculate aspect ratio (width / height)
+            aspect_ratio = rect_width / rect_height if rect_height != 0 else 0
+            aspectRatio.append(aspect_ratio)
+
+            AOD.append([count,rectangle[i][2]*PixToNM,rectangle[i][3]*PixToNM,rectangle[i][0]*PixToNM,rectangle[i][1]*PixToNM,Solidity[i],equDiameter,perimeter_contour,Sphericity,aspect_ratio])
             selectedSolidity.append(Solidity[i])
             equivalentDiameter.append(equDiameter)
             width.append(int(rectangle[i][2]*PixToNM))
@@ -286,7 +295,7 @@ for filename in os.listdir(directory):
 
 
     df = pd.DataFrame(np.array(AOD),
-                       columns=['Sn', 'w', 'h','x','y','Solidity','equivalentDiameter9nm','perimeter','Sphericity'])
+                       columns=['Sn', 'w', 'h','x','y','Solidity','equivalentDiameter9nm','perimeter','Sphericity', 'AspectRatio'])
     df.to_csv('Results/'+image[:-4]+'Analysis.csv')
     particleSize=[]
     for i in selectedRect:
